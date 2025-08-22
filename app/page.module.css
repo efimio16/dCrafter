@@ -1,0 +1,37 @@
+.form {
+    width: 100%;
+    max-width: 28rem;
+    padding: 1rem;
+    font-size: small;
+    color: black;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.darkTheme .form {
+    color: white;
+}
+
+.form input {
+    margin-top: .75rem;
+    display: block;
+    width: 100%;
+    border-radius: var(--radius-lg);
+    border-style: none;
+    background-color: color-mix(in oklab, white 10%, transparent);
+    padding: .375rem .75rem;
+}
+
+.form input:focus:not([data-focus]) {
+    outline: none;
+}
+
+.form input[data-focus] {
+    outline: 2px color-mix(in oklab, var(--color-white) 25%, transparent) solid;
+    outline-offset: 2px;
+}
+
+.form input:invalid {
+    outline: 2px color-mix(in oklab, red 50%, transparent) solid;
+}

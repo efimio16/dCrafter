@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
-import { Providers } from "@/providers";
+import Providers from "@/providers";
+import { headers } from 'next/headers';
 
 const poppins = Poppins({
     weight: ['300', '700'],
@@ -36,15 +37,18 @@ export const metadata: Metadata = {
 }
 
 
-export default function RootLayout({
+export default async function RootLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
+    const headersObj = await headers();
+    const cookies = headersObj.get('cookie')
+
     return (
         <html lang="en">
             <body className={`${poppins.className} dark:bg-gray-950 text-black dark:text-white p-4 relative`}>
-                <Providers>{children}</Providers>
+                <Providers cookies={cookies}>{children}</Providers>
             </body>
         </html>
     );

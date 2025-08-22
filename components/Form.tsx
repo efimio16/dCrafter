@@ -22,7 +22,7 @@ const animationExtensions = [...videoExtensions, ...audioExtensions, ...modelExt
 const imageExtensions = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'];
 
 export default function Form() {
-    const [metadata, setMetadata] = useState<Record<FieldName, any>>({
+    const [metadata, setMetadata] = useState<Record<FieldName, string | number>>({
         name: '',
         description: '',
         supply: 1,

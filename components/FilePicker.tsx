@@ -1,4 +1,4 @@
-import { Fieldset, Legend, Field, Input, Button } from "@headlessui/react";
+import { Field, Input, Button } from "@headlessui/react";
 import { ReactNode, useRef, useState } from "react";
 
 interface FilePickerProps {

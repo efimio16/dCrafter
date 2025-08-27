@@ -1,6 +1,6 @@
 import { TurboAuthenticatedClient, TurboFactory, TurboUploadDataItemResponse } from '@ardrive/turbo-sdk/web';
 import { InjectedEthereumSigner } from '@dha-team/arbundles';
-import { ChangeEvent, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useAccount, useSignMessage } from 'wagmi';
 
 export function useUploadFile() {
@@ -9,8 +9,8 @@ export function useUploadFile() {
 
     const turbo = useRef<TurboAuthenticatedClient>(null);
     
-    const [price, setPrice] = useState('0');
-    const [token, setToken] = useState('');
+    // const [price, setPrice] = useState('0');
+    // const [token, setToken] = useState('');
     const [result, setResult] = useState<TurboUploadDataItemResponse | null>(null);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -31,7 +31,7 @@ export function useUploadFile() {
         });
 
         turbo.current = TurboFactory.authenticated({ token: 'pol', signer });
-    }, [address]);
+    }, [address, signMessageAsync]);
 
     function upload(file: File, onFinish?: () => void) {
         if (!turbo.current || loading) return;
@@ -51,7 +51,7 @@ export function useUploadFile() {
                 ],
             },
             events: {
-                onProgress: ({ totalBytes, processedBytes, step }) => setProgress(Math.round((processedBytes / totalBytes) * 100)),
+                onProgress: ({ totalBytes, processedBytes }) => setProgress(Math.round((processedBytes / totalBytes) * 100)),
                 onError: (err) => setError(err.message || String(err)),
             },
         }).then(result => {
@@ -63,5 +63,5 @@ export function useUploadFile() {
         });
     }
 
-    return { price, token, result, error, loading, progress, upload }
+    return { result, error, loading, progress, upload }
 }

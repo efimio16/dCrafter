@@ -1,6 +1,6 @@
 'use client';
 
-import { Field, Label, Description, Input, Fieldset, Legend, Button, Checkbox } from "@headlessui/react"
+import { Fieldset, Legend, Button } from "@headlessui/react"
 import { FormEvent, useState } from "react"
 import Image from "next/image";
 import Preview from "./Preview";

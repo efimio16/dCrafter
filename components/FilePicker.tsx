@@ -4,7 +4,7 @@ import { ReactNode, useRef, useState } from "react";
 interface FilePickerProps {
     children: ReactNode;
     validate: (file: File | null) => string | void;
-    onSrcChange: (src: string | null) => void;
+    onChange: (src: string | null, file: File | null) => void;
 }
 
 export default function FilePicker(props: FilePickerProps) {
@@ -18,12 +18,12 @@ export default function FilePicker(props: FilePickerProps) {
         const result = props.validate(file);
         if (result) {
             setError(result);
-            props.onSrcChange(null);
+            props.onChange(null, null);
         } else {
             if (file) {
                 setName(file.name);
-                props.onSrcChange(URL.createObjectURL(new Blob([file])));
-            } else props.onSrcChange(null);
+                props.onChange(URL.createObjectURL(new Blob([file])), file);
+            } else props.onChange(null, null);
         }
     }
     return (

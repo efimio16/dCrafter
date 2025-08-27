@@ -1,19 +1,21 @@
 'use client';
 
-import { Field, Label, Description, Input, Fieldset, Legend, Button } from "@headlessui/react"
+import { Field, Label, Description, Input, Fieldset, Legend, Button, Checkbox } from "@headlessui/react"
 import { FormEvent, useState } from "react"
 import Image from "next/image";
 import Preview from "./Preview";
 import FileSection from "./FilePicker";
+import { useUploadFile } from "@/lib/useUploadFile";
+import FormField, { FormFieldProps } from "./FormField";
 
-type FieldName = 'name' | 'description' | 'supply' | 'royalty' | 'external_url';
-const fields = [
-    { name: 'name' as FieldName, label: 'Name', description: 'Give a name to your NFT', required: true, type: 'string', placeholder: 'My NFT' },
-    { name: 'description' as FieldName, label: 'Description', description: 'Tell something about the NFT', required: true, type: 'string', placeholder: 'This is my first NFT' },
-    { name: 'supply' as FieldName, label: 'Supply', description: 'How many NFTs do you want to sell', required: true, type: 'number', placeholder: '1', min: 1 },
-    { name: 'royalty' as FieldName, label: 'Royalty', description: 'Percentage you earn from each resell', required: true, type: 'number', placeholder: '0', min: 0, max: 15 },
-    { name: 'external_url' as FieldName, label: 'External link (optional)', description: 'Provide a link to socials/your page', required: false, type: 'url', placeholder: 'https://example.com' },
-]
+interface NFTMetadata {
+    name: string;
+    description: string;
+    supply: number;
+    royaltyFee?: number;
+    royaltyReceiver?: string;
+    externalUrl?: string;
+}
 
 const videoExtensions = ['webm', 'mp4', 'm4v', 'ogv'];
 const audioExtensions = ['ogg', 'oga', 'mp3', 'wav'];
@@ -22,19 +24,27 @@ const animationExtensions = [...videoExtensions, ...audioExtensions, ...modelExt
 const imageExtensions = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'];
 
 export default function Form() {
-    const [metadata, setMetadata] = useState<Record<FieldName, string | number>>({
+    const [metadata, setMetadata] = useState<NFTMetadata>({
         name: '',
         description: '',
         supply: 1,
-        royalty: 0,
-        external_url: '',
+        royaltyFee: 0,
+        externalUrl: '',
     });
 
     const [fileSrc, setFileSrc] = useState<string | null>('');
     const [fileType, setFileType] = useState<'audio' | 'video' | 'image' | 'model' | null>(null);
+    const [fileObject, setFileObject] = useState<File | null>(null);
     
     const [coverNeeded, setCoverNeeded] = useState(false);
     const [coverSrc, setCoverSrc] = useState<string | null>('');
+    const [coverObject, setCoverObject] = useState<File | null>(null);
+
+    const { upload, result, loading } = useUploadFile();
+
+    function onChange(field: FormFieldProps) {
+        setMetadata({ ...metadata, [field.name]: field.value });
+    }
     
     function validateFile(file: File | null) {
         setFileType(null);
@@ -64,48 +74,39 @@ export default function Form() {
 
     function onSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
-        console.log(metadata);
+        if (fileObject) upload(fileObject, () => {
+            console.log(result);
+            if (coverNeeded && coverObject) upload(coverObject, () => console.log(result));
+        });
     }
 
     return (
         <form action='#' className="flex flex-col items-center gap-8 p-8 mt-3 bg-black/5 dark:bg-white/10 rounded-2xl" onSubmit={onSubmit}>
-            <div className="flex flex-row w-max gap-16">
-                <Fieldset className="w-full max-w-md gap-2 flex flex-col text-sm/6">
-                    <Legend className="text-base/7 font-semibold">Metadata</Legend>
-                    {fields.map((field, i) => (
-                        <Field key={i}>
-                            <Label className="font-medium">{field.label}</Label>
-                            <Description className="text-gray-500 dark:text-gray-400">{field.description}</Description>
-                            <Input
-                                required={field.required}
-                                placeholder={field.placeholder}
-                                max={field.max}
-                                min={field.min}
-                                {...(field.type === 'url' ? { pattern: "http(s)?://.*" } : {})}
-                                value={String(metadata[field.name])}
-                                onChange={e => setMetadata({ ...metadata, [field.name]: e.currentTarget[field.type == 'number' ? 'valueAsNumber' : 'value'] })}
-                                type={field.type}
-                                className='mt-3 block w-full rounded-lg border-none bg-black/5 dark:bg-white/10 px-3 py-1.5
-                                focus:not-data-focus:outline-none data-focus:outline-2 data-focus:-outline-offset-2 not-invalid:data-focus:outline-black/25 dark:data-focus:outline-white/25
-                                data-focus:invalid:outline-red-500'
-                            />
-                        </Field>
-                    ))}
+            <div className="flex flex-row gap-16 flex-wrap justify-around"> 
+                <Fieldset className="max-w-md gap-2 flex flex-col text-sm/6">
+                    <Legend className="text-base/7 font-semibold mb-2">Metadata</Legend>
+                    <FormField name="name" label="Name" description="Give a name to your NFT" required value={metadata.name} placeholder="My NFT" onChange={onChange}/>
+                    <FormField name="symbol" label="Symbol" description="Create an abbreviature for NFT" required value={metadata.name} placeholder="This is my first NFT" onChange={onChange}/>
+                    <FormField name="description" label="Description" description="Tell something about the NFT" required value={metadata.name} placeholder="MNFT" minLength={3} maxLength={5} onChange={onChange}/>
+                    <FormField name="supply" label="Supply" description="How many NFTs do you want to sell" required value={metadata.name} placeholder="1" min={1} max={10000}/>
+                    <FormField name="royaltyFee" label="Royalty fee" description="Percentage you earn from each resell" required value={metadata.name} placeholder="0" min={0} max={15} step={0.1} onChange={onChange}/>
+                    <FormField name="royaltyReceiver" label="Royalty receiver" description="Address to receive royalties" required value={metadata.name} placeholder="0x1234..." onChange={onChange}/>
+                    <FormField name="externalUrl" label="External link (optional)" description="Provide a link to socials/your page" value={metadata.name} placeholder="https://example.com" pattern="http(s)?://.*" onChange={onChange}/>
                 </Fieldset>
                 <Fieldset>
-                    <Legend className="text-base/7 font-semibold">Content</Legend>
-                    <FileSection validate={validateFile} onSrcChange={setFileSrc}>
+                    <Legend className="text-base/7 font-semibold mb-2">Content</Legend>
+                    <FileSection validate={validateFile} onChange={(src, f) => (setFileSrc(src), setFileObject(f))}>
                         {fileType && fileSrc ? <Preview type={fileType} src={fileSrc}/> : <p>No file selected.</p>}
                     </FileSection>
                 </Fieldset>
                 <Fieldset disabled={!coverNeeded} className="disabled:opacity-50">
-                    <Legend className="text-base/7 font-semibold">Cover</Legend>
-                        <FileSection validate={validateCover} onSrcChange={setCoverSrc}>
+                    <Legend className="text-base/7 font-semibold mb-2">Cover</Legend>
+                        <FileSection validate={validateCover} onChange={(src, f) => (setCoverSrc(src), setCoverObject(f))}>
                         {(coverNeeded ? coverSrc : fileSrc) ? <Image src={coverNeeded ? coverSrc! : fileSrc!} width={256} height={256} alt="cover"/> : <p>No file selected.</p>}
                     </FileSection>
                 </Fieldset>
             </div>
-            <Button type="submit" disabled={!fileSrc || (coverNeeded && !coverSrc)} className="px-6 py-3 rounded-2xl bg-blue-500 text-gray-100 font-semibold hover:scale-110 transition-transform ease-in disabled:opacity-60">Create!</Button>
+            <Button type="submit" disabled={!fileSrc || (coverNeeded && !coverSrc) || loading} className="px-6 py-3 rounded-2xl bg-blue-500 text-gray-100 font-semibold hover:scale-110 transition-transform ease-in disabled:opacity-60">Create!</Button>
         </form>
     )
 }

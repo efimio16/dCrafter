@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 // import { Poppins } from "next/font/google";
 import "./globals.css";
 import { Provider } from "@/components/ui/provider"
+import PlausibleProvider from "next-plausible";
 
 // const poppins = Poppins({
 //     weight: ['300', '700'],
@@ -46,7 +47,12 @@ export default async function RootLayout({
         <html lang="en" suppressHydrationWarning>
             {/* <body className={`dark:bg-gray-950 text-black dark:text-white p-4 relative`}> */}
             <body style={{ padding: '20px' }}>
-                <Provider>{children}</Provider>
+                <Provider>
+                    <PlausibleProvider
+                    domain="dcrafter.vercel.app"
+                    trackLocalhost
+                    enabled
+                >{children}</PlausibleProvider></Provider>
             </body>
         </html>
     );

@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
+// import { Poppins } from "next/font/google";
 import "./globals.css";
-import Providers from "@/providers";
-import { headers } from 'next/headers';
+import { Provider } from "@/components/ui/provider"
 
-const poppins = Poppins({
-    weight: ['300', '700'],
-    subsets: ["latin"],
-});
+// const poppins = Poppins({
+//     weight: ['300', '700'],
+//     subsets: ["latin"],
+// });
 
 export const metadata: Metadata = {
     title: "dCrafter - NFT creation tool for creators",
@@ -42,13 +41,12 @@ export default async function RootLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    const headersObj = await headers();
-    const cookies = headersObj.get('cookie')
 
     return (
-        <html lang="en">
-            <body className={`${poppins.className} dark:bg-gray-950 text-black dark:text-white p-4 relative`}>
-                <Providers cookies={cookies}>{children}</Providers>
+        <html lang="en" suppressHydrationWarning>
+            {/* <body className={`dark:bg-gray-950 text-black dark:text-white p-4 relative`}> */}
+            <body style={{ padding: '20px' }}>
+                <Provider>{children}</Provider>
             </body>
         </html>
     );

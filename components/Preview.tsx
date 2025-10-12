@@ -10,19 +10,24 @@ function Model({ url }: { url: string }) {
 
 interface PreviewProps {
     src: string;
-    type: 'audio' | 'video' | 'image' | 'model';
+    fileName: string;
 }
 
-export default function Preview({ src, type }: PreviewProps) {
+const videoAudioExtensions = ['webm', 'mp4', 'm4v', 'ogv', 'ogg', 'oga', 'mp3', 'wav'];
+const modelExtensions = ['gltf', 'glb'];
+const imageExtensions = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'];
+
+export default function Preview({ src, fileName }: PreviewProps) {
+    const fileExt = fileName.split('.').at(-1) || '';
     return (
-        type == 'image' ? <Image src={src} width={200} height={200} className="size-full" alt="preview"/> :
-        type == 'video' || type == 'audio' ? <ReactPlayer src={src} className="size-full" controls/> :
-        type == 'model' ? (
+        imageExtensions.includes(fileExt) ? <Image src={src} width={200} height={200} className="size-full" alt="preview"/> :
+        videoAudioExtensions.includes(fileExt) ? <ReactPlayer src={src} className="size-full" controls/> :
+        modelExtensions.includes(fileExt) ? (
             <Canvas className="size-full">
                 <ambientLight intensity={2}/>
                 <Model url={src} />
                 <OrbitControls />
             </Canvas>
-        ) : null
+        ) : <p>Unknown file type</p>
     )
 }

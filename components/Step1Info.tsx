@@ -1,4 +1,4 @@
-import { StepProps } from "@/app/create/page";
+import { StepProps } from "@/app/page";
 import { Box, Collapsible, Field, Fieldset, Input, Stack } from "@chakra-ui/react";
 
 export default function Step1Info(props: StepProps) {

@@ -2,9 +2,20 @@ import { NFTMetadata } from "@/app/page";
 import { Accordion, Box, Card, Code, DataList, EmptyState, Flex, Float, HStack, SegmentGroup, Span, Tag, VStack } from "@chakra-ui/react";
 import Preview from "./Preview";
 import { useState } from "react";
+import { usePlausible } from 'next-plausible'
 
 export default function NFTCard(props: { metadata: NFTMetadata }) {
+    // const plausible = usePlausible();
     const [cardMedia, setCardMedia] = useState('cover');
+
+    // function onPreviewTypeChange(e: { value: string | null }) {
+    //     setCardMedia(e.value || '');
+    //     plausible("NFTCard - toggle preview", { props: { data: e.value } });
+    // }
+
+    // function onAccordionChange(e: { value: string[] }) {
+    //     plausible("NFTCard - toggle accrordion", { props: { data: e.value } });
+    // }
     
     return (
         <Card.Root flexDirection="row" overflow="hidden" w="fit-content">
@@ -33,7 +44,7 @@ export default function NFTCard(props: { metadata: NFTMetadata }) {
                         </HStack>
                     </Card.Title>
                     <Card.Description>{props.metadata.description}</Card.Description>
-                    <Accordion.Root collapsible minW={"sm"}>
+                    <Accordion.Root collapsible minW={"sm"} multiple>
                         <Accordion.Item value="traits">
                             <Accordion.ItemTrigger>
                                 <Span flex="1">Traits</Span>

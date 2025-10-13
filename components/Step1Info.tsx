@@ -1,7 +1,9 @@
 import { StepProps } from "@/app/page";
 import { Box, Collapsible, Field, Fieldset, Input, Stack } from "@chakra-ui/react";
+import { usePlausible } from "next-plausible";
 
 export default function Step1Info(props: StepProps) {
+    const plausible = usePlausible();
     return (
         <Stack>
             <Fieldset.Root size="lg" maxW="md">
@@ -25,7 +27,7 @@ export default function Step1Info(props: StepProps) {
                         <Input value={props.metadata.symbol} name="symbol" onChange={e => props.setMetadata({ ...props.metadata, symbol: e.currentTarget.value})} placeholder="MNFT"/>
                         <Field.HelperText>Create an abbreviature for NFT.</Field.HelperText>
                     </Field.Root>
-                    <Collapsible.Root>
+                    <Collapsible.Root onOpenChange={e => plausible(`${e.open ? "Opened" : "Closed"} Other Settings`)}>
                         <Collapsible.Trigger paddingY="3">Other settings</Collapsible.Trigger>
                         <Collapsible.Content>
                             <Box padding="4" borderWidth="1px">

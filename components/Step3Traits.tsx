@@ -1,15 +1,19 @@
 import { StepProps, Trait } from "@/app/page";
 import { Button, EmptyState, Field, Input, NativeSelect, Stack, Table, VStack } from "@chakra-ui/react";
+import { usePlausible } from "next-plausible";
 import { LuTrash } from "react-icons/lu";
 
 export default function Step3Traits(props: StepProps) {
+    const plausible = usePlausible();
     function onTraitChange(index: number, newValue: Partial<Trait>) {
+        plausible("Added a Trait");
         if (newValue.type) newValue.value = '';
         props.metadata.traits[index] = { ...props.metadata.traits[index], ...newValue };
         props.setMetadata({ ...props.metadata, traits: props.metadata.traits });
     }
 
     function onTraitRemove(index: number) {
+        plausible("Removed a Trait");
         props.setMetadata({ ...props.metadata, traits: props.metadata.traits.toSpliced(index, 1) });
     }
 

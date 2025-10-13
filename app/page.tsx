@@ -5,7 +5,8 @@ import Step2Content from "@/components/Step2Content";
 import Step3Traits from "@/components/Step3Traits";
 import Step4Deploy from "@/components/Step4Deploy";
 import { Button, ButtonGroup, Center, Container, Heading, Stack, Steps } from "@chakra-ui/react";
-import { useState } from "react";
+import { usePlausible } from "next-plausible";
+import { useEffect, useState } from "react";
 
 export interface NFTMetadata {
     name: string;
@@ -68,16 +69,40 @@ export default function CreateNFT() {
         animationName: '',
         isImage: true,
     });
+
+    const plausible = usePlausible();
     const [activeStep, setActiveStep] = useState(0);
     const isNextDisabled =
         activeStep === 0 && (!metadata.name || !metadata.description || !metadata.supply || !metadata.symbol) ||
         activeStep === 1 && (!metadata.imageUrl || (!metadata.isImage && !metadata.animationUrl));
 
+    function onStepChange(e: { step: number }) {
+        plausible(`${e.step > activeStep ? 'Go' : 'Return'} to Step ${e.step}`);
+        setActiveStep(e.step);
+    }
+
+    useEffect(() => {
+        const onUnload = () => {
+            if (activeStep !== 4) plausible("Exited Before Preview");
+        }
+        const onVisibilityChange = () => {
+            plausible({ "hidden": "Page hidden", "visible": "Page visible" }[document.visibilityState]);
+        }
+
+        document.addEventListener("visibilitychange", onVisibilityChange);
+        window.addEventListener("beforeunload", onUnload);
+
+        return () => {
+            document.removeEventListener("visibilitychange", onVisibilityChange);
+            window.removeEventListener("beforeunload", onUnload);
+        }
+    }, [activeStep]);
+
     return (
     <Center width={"100vw"}>
         <Stack>
             <Heading size={"3xl"}>Create NFT</Heading>
-            <Steps.Root count={steps.length} width={"80vw"} step={activeStep} onStepChange={e => setActiveStep(e.step)}>
+            <Steps.Root count={steps.length} width={"80vw"} step={activeStep} onStepChange={onStepChange}>
                 <Steps.List>
                     {steps.map((step, index) => 
                         <Steps.Item key={index} index={index} title={step.title}>

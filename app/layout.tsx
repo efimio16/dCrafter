@@ -48,11 +48,10 @@ export default async function RootLayout({
             {/* <body className={`dark:bg-gray-950 text-black dark:text-white p-4 relative`}> */}
             <body style={{ padding: '20px' }}>
                 <Provider>
-                    <PlausibleProvider
-                    domain="dcrafter.vercel.app"
-                    trackLocalhost
-                    enabled
-                >{children}</PlausibleProvider></Provider>
+                    <PlausibleProvider domain="dcrafter.vercel.app" trackLocalhost enabled>
+                        {children}
+                    </PlausibleProvider>
+                </Provider>
             </body>
         </html>
     );

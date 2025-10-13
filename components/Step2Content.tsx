@@ -1,6 +1,7 @@
 import { StepProps } from "@/app/page";
 import { Box, Center, Fieldset, FileUpload, Flex, Float, SegmentGroup, Stack } from "@chakra-ui/react";
 import Preview from "./Preview";
+import { usePlausible } from "next-plausible";
 
 const contentTypes = {
     image: "Image",
@@ -8,10 +9,13 @@ const contentTypes = {
 }
 
 export default function Step2Content(props: StepProps) {
+    const plausible = usePlausible();
     function onImageChange(files: File[]) {
+        plausible("Uploaded Image");
         props.setMetadata({ ...props.metadata, imageUrl: files.length ? URL.createObjectURL(new Blob([files[0]])) : '', imageName: files[0]?.name || '' });
     }
     function onAnimationChange(files: File[]) {
+        plausible("Uploaded Animation");
         props.setMetadata({ ...props.metadata, animationUrl: files.length ? URL.createObjectURL(new Blob([files[0]])) : undefined, animationName: files[0]?.name || undefined });
     }
 

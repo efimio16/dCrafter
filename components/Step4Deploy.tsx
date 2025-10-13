@@ -1,4 +1,5 @@
 import { Fieldset, NativeSelect, RadioGroup, Show, Stack, Text } from "@chakra-ui/react";
+import { usePlausible } from "next-plausible";
 import { useState } from "react";
 
 const chains = [
@@ -8,13 +9,15 @@ const chains = [
 
 export default function Step4Deploy() {
     const [chainChoise, setChainChoise] = useState("auto");
+    const plausible = usePlausible();
+
     return (
         <Stack>
             <Fieldset.Root size="lg" maxW="md">
                 <Fieldset.Legend>Deploy</Fieldset.Legend>
                 <Fieldset.Content>
                     <Text>Chain</Text>
-                    <RadioGroup.Root value={chainChoise} onValueChange={e => e.value && setChainChoise(e.value)}>
+                    <RadioGroup.Root value={chainChoise} onValueChange={e => (e.value && setChainChoise(e.value), plausible("Chnaged Chain Choise"))}>
                         <Stack gap="6">
                             <RadioGroup.Item value={"auto"}>
                                 <RadioGroup.ItemHiddenInput />
